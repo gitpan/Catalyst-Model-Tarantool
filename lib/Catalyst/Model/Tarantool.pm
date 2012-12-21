@@ -68,54 +68,58 @@ __END__
 Catalyst::Model::Tarantool
 
 =head1 SYNOPSIS
-MyApp.pm
-  use Catalyst::Model::Tarantool;
-  __PACKAGE__->config(
-    servers => "127.0.0.1:33013",
-    name    => "users",              # mostly used for debug purposes
-    spaces => [ {
-        indexes => [
-                {
-                    index_name   => 'id',
-                    keys         => [0],
-		}, {
-                    index_name   => 'user_name', # e.g. login or etc.
-                    keys         => [0],	
-		}, {
-                    index_name   => 'first_name',
-                    keys         => [0],	
-		}, {
-                    index_name   => 'last_name',
-                    keys         => [0],	
-		} ],
-        space         => 0,               # space id, as set in Tarantool/Box config
-        name          => "primary",       # self-descriptive space-id
-        format        => "l&&&&",         # pack()-compatible, Qq must be supported by perl itself, see perldoc -f pack
-                                          # & stands for byte-string, $ stands for utf8 string.
-        default_index => 'id',
-        fields        => [qw/ id user_name first_name last_name /], # turn each tuple into hash, field names according to format
-    } ],
-    default_space => "primary",
 
+MyApp.pm
+
+    use Catalyst::Model::Tarantool;
+    __PACKAGE__->config(
+	servers => "127.0.0.1:33013",
+	name    => "users",              # mostly used for debug purposes
+	spaces => [
+	    {
+	    indexes => [
+		    {
+			index_name   => 'id', # num
+			keys         => [0],
+		    }, {
+			index_name   => 'user_name', # str
+			keys         => [0],	
+		    }, {
+			index_name   => 'first_name', # str
+			keys         => [0],	
+		    }, {
+			index_name   => 'last_name', # str
+			keys         => [0],	
+		    } ],
+	    space         => 0,               # space id, as set in Tarantool/Box config
+	    name          => "primary",       # self-descriptive space-id
+	    format        => "l&&&",         # pack()-compatible, Qq must be supported by perl itself, see perldoc -f pack
+					      # & stands for byte-string, $ stands for utf8 string.
+	    default_index => 'id',
+	    fields        => [qw/ id user_name first_name last_name /], # turn each tuple into hash, field names according to format
+	}
+    ],
+    default_space => "primary",
     timeout   => 1,                   # seconds, not float!
     retry     => 3,
     debug     => 9,                   # output to STDERR some debugging info
     raise     => 1,                   # dont raise an exception in case of error
-  );
+);
   
 MyApp::Controller::Root
-  sub index :Path :Args(0) {
-    my ( $self, $c ) = @_;
-    my $tnt = $c->model('TNT')->handler;
-    my $tuple = $tnt->Select( 1 ); # hashref
-    $c->stash(tuple => $tuple);
-  }
+    sub index :Path :Args(0) {
+	my ( $self, $c ) = @_;
+	my $tnt = $c->model('TNT')->handler;
+	my $tuple = $tnt->Select( 1 ); # hashref
+	$c->stash(tuple => $tuple);
+    }
 
 =head1 DESCRIPTION
 
 Tarantool interface for Catalyst based application
 
 =head1 SEE ALSO
+
 Want more? 
 L<MR::Tarantool::Box>.
 
