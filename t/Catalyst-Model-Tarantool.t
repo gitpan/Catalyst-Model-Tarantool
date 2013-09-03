@@ -16,3 +16,4 @@ BEGIN { use_ok('Catalyst::Model::Tarantool') };
 # Insert your test code below, the Test::More module is use()ed here so read
 # its man page ( perldoc Test::More ) for help writing this test script.
 
+1;
